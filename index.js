@@ -1,14 +1,13 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 
-const main = async () =>
-{
+const main = async () => {
     await mongoose.connect(`${process.env.DB_TYPE}://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`);
-    
+
     const RockstarGamesPlayerSchema = new mongoose.Schema({
-        name: String,
-        gender: String,
-        City: String,
+        name: { type: String, unique: true },
+        gender: { type: String, unique: true },
+        City: { type: String, unique: true },
         Age: Number
     });
 
@@ -25,12 +24,21 @@ const main = async () =>
         City: 'Vice City',
         Age: 30
     });
-    
-    // await Jason.save();
-    // await Lucia.save();
 
-    const GTAVI_Resut = await GTAVI.find({gender : 'Male'}).limit(1);
+    await Jason.save();
+    await Lucia.save();
+
+    // const GTAVI_Resut = await GTAVI.find({gender : 'Male'}).limit(1);
+    const GTAVI_Resut = await GTAVI.find({ gender: 'Female' });
     console.log(GTAVI_Resut);
+    
 }
 
-main();
+main().then(() => {
+    console.log("Sucessfully connected to", process.env.DB_NAME);
+}).catch((err) => {
+    console.log(err);
+}).finally(() => {
+    mongoose.connection.close()
+    console.log("Sucessfully closed the connection", process.env.DB_NAME);
+});
